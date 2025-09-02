@@ -3,6 +3,15 @@ import pandas as pd
 import logging
 from src.logger import logging
 from io import StringIO
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+aws_access_key = os.getenv("AWS_ACCESS_KEY_ID")
+aws_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+aws_region = os.getenv("AWS_REGION")
 
 # # Configure logging
 # logging.basicConfig(level=logging.INFO)
@@ -16,10 +25,10 @@ class s3_operations:
         self.BUCKET_NAME = BUCKET_NAME
         self.s3_client = boto3.client(
             's3',
-            ACCESS_KEY_ID=ACCESS_KEY_ID,
-            SECRET_ACCESS_KEY=SECRET_ACCESS_KEY,
-            region_name=region_name
-        )
+            aws_access_key_id=aws_access_key,
+            aws_secret_access_key=aws_secret_key,
+            region_name=aws_region
+        ) 
         logging.info("Data Ingestion from S3 bucket initialized")
 
     def fetch_file_from_s3(self, file_key):
