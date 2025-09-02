@@ -78,10 +78,8 @@ def main():
         test_size = 0.2
         
         #df = load_data(data_url='notebooks/data.csv')
-        s3 = s3_connection.s3_operations("BUCKET_NAME", "ACCESS_KEY_ID", "SECRET_ACCESS_KEY")
+        s3 = s3_connection.s3_operations()
         df = s3.fetch_file_from_s3("data.csv")
-
-
 
         final_df = preprocess_data(df)
         train_data, test_data = train_test_split(final_df, test_size=test_size, random_state=42)
