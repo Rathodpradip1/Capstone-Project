@@ -9,15 +9,15 @@ from io import StringIO
 # logger = logging.getLogger(__name__)
 
 class s3_operations:
-    def __init__(self, bucket_name, aws_access_key, aws_secret_key, region_name="us-east-1"):
+    def __init__(self, BUCKET_NAME, ACCESS_KEY_ID, SECRET_ACCESS_KEY, region_name="us-east-1"):
         """
         Initialize the s3_operations class with AWS credentials and S3 bucket details.
         """
-        self.bucket_name = bucket_name
+        self.BUCKET_NAME = BUCKET_NAME
         self.s3_client = boto3.client(
             's3',
-            aws_access_key_id=aws_access_key,
-            aws_secret_access_key=aws_secret_key,
+            ACCESS_KEY_ID=ACCESS_KEY_ID,
+            SECRET_ACCESS_KEY=SECRET_ACCESS_KEY,
             region_name=region_name
         )
         logging.info("Data Ingestion from S3 bucket initialized")
@@ -29,8 +29,8 @@ class s3_operations:
         :return: Pandas DataFrame
         """
         try:
-            logging.info(f"Fetching file '{file_key}' from S3 bucket '{self.bucket_name}'...")
-            obj = self.s3_client.get_object(Bucket=self.bucket_name, Key=file_key)
+            logging.info(f"Fetching file '{file_key}' from S3 bucket '{self.BUCKET_NAME}'...")
+            obj = self.s3_client.get_object(Bucket=self.BUCKET_NAME, Key=file_key)
             df = pd.read_csv(StringIO(obj['Body'].read().decode('utf-8')))
             logging.info(f"Successfully fetched and loaded '{file_key}' from S3 that has {len(df)} records.")
             return df
