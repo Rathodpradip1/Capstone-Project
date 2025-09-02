@@ -19,22 +19,18 @@ aws_region = os.getenv("AWS_REGION")
 
 class s3_operations:
     def __init__(self):
-        self.BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+        self.BUCKET_NAME = os.getenv("BUCKET_NAME")
+        aws_access_key = os.getenv("ACCESS_KEY_ID")
+        aws_secret_key = os.getenv("SECRET_ACCESS_KEY")
+        aws_region = os.getenv("AWS_REGION", "us-east-1")
+
+        if not all([self.BUCKET_NAME, aws_access_key, aws_secret_key, aws_region]):
+            raise ValueError("❌ Missing one or more AWS credentials in .env file")
+
         self.s3_client = boto3.client(
             "s3",
-            aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-            region_name=os.getenv("AWS_REGION")
+            aws_access_key_id=aws_access_key,
+            aws_secret_access_key=aws_secret_key,
+            region_name=aws_region
         )
-        logging.info(f"S3 connection initialized for bucket: {self.BUCKET_NAME}")
-
-    def fetch_file_from_s3(self, file_key):
-        try:
-            logging.info(f"Fetching file '{file_key}' from S3 bucket '{self.BUCKET_NAME}'...")
-            obj = self.s3_client.get_object(Bucket=self.BUCKET_NAME, Key=file_key)
-            df = pd.read_csv(StringIO(obj['Body'].read().decode('utf-8')))
-            logging.info(f"✅ Successfully fetched '{file_key}' with {len(df)} rows")
-            return df
-        except Exception as e:
-            logging.exception(f"❌ Failed to fetch '{file_key}' from S3: {e}")
-            raise
+        logging.info("✅ S3 connection initialized")
