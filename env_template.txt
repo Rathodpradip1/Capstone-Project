@@ -1,0 +1,4 @@
+BUCKET_NAME=your_bucket_name
+AWS_REGION=your_region
+ACCESS_KEY_ID=access_key_detail
+SECRET_ACCESS_KEY=secret_access_key_detail
