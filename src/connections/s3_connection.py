@@ -8,10 +8,10 @@ from io import StringIO
 # logging.basicConfig(level=logging.INFO)
 # logger = logging.getLogger(__name__)
 
-class S3Operations:  # ✅ Use PascalCase for class name
+class s3_operations:
     def __init__(self, bucket_name, aws_access_key, aws_secret_key, region_name="us-east-1"):
         """
-        Initialize the S3Operations class with AWS credentials and S3 bucket details.
+        Initialize the s3_operations class with AWS credentials and S3 bucket details.
         """
         self.bucket_name = bucket_name
         self.s3_client = boto3.client(
@@ -37,4 +37,3 @@ class S3Operations:  # ✅ Use PascalCase for class name
         except Exception as e:
             logging.exception(f"❌ Failed to fetch '{file_key}' from S3: {e}")
             return None
-       
