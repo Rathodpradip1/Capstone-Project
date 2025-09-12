@@ -215,3 +215,6 @@ models/
 
 
 .env
+data/raw/
+
+
