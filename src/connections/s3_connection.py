@@ -3,34 +3,38 @@ import pandas as pd
 import logging
 from src.logger import logging
 from io import StringIO
-import os
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-aws_access_key = os.getenv("AWS_ACCESS_KEY_ID")
-aws_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
-aws_region = os.getenv("AWS_REGION")
 
 # # Configure logging
 # logging.basicConfig(level=logging.INFO)
 # logger = logging.getLogger(__name__)
 
-class s3_operations:
-    def __init__(self):
-        self.BUCKET_NAME = os.getenv("BUCKET_NAME")
-        aws_access_key = os.getenv("ACCESS_KEY_ID")
-        aws_secret_key = os.getenv("SECRET_ACCESS_KEY")
-        aws_region = os.getenv("AWS_REGION", "us-east-1")
-
-        if not all([self.BUCKET_NAME, aws_access_key, aws_secret_key, aws_region]):
-            raise ValueError("❌ Missing one or more AWS credentials in .env file")
-
+class S3Operations:  # ✅ Use PascalCase for class name
+    def __init__(self, bucket_name, aws_access_key, aws_secret_key, region_name="us-east-1"):
+        """
+        Initialize the S3Operations class with AWS credentials and S3 bucket details.
+        """
+        self.bucket_name = bucket_name
         self.s3_client = boto3.client(
-            "s3",
+            's3',
             aws_access_key_id=aws_access_key,
             aws_secret_access_key=aws_secret_key,
-            region_name=aws_region
+            region_name=region_name
         )
-        logging.info("✅ S3 connection initialized")
+        logging.info("Data Ingestion from S3 bucket initialized")
+
+    def fetch_file_from_s3(self, file_key):
+        """
+        Fetches a CSV file from the S3 bucket and returns it as a Pandas DataFrame.
+        :param file_key: S3 file path (e.g., 'data/data.csv')
+        :return: Pandas DataFrame
+        """
+        try:
+            logging.info(f"Fetching file '{file_key}' from S3 bucket '{self.bucket_name}'...")
+            obj = self.s3_client.get_object(Bucket=self.bucket_name, Key=file_key)
+            df = pd.read_csv(StringIO(obj['Body'].read().decode('utf-8')))
+            logging.info(f"Successfully fetched and loaded '{file_key}' from S3 that has {len(df)} records.")
+            return df
+        except Exception as e:
+            logging.exception(f"❌ Failed to fetch '{file_key}' from S3: {e}")
+            return None
+       

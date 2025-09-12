@@ -9,6 +9,29 @@ import yaml
 import logging
 from src.logger import logging
 from src.connections import s3_connection
+from src.connections.s3_connection import S3Operations
+
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+bucket_name = os.getenv("BUCKET_NAME")
+aws_access_key = os.getenv("AWS_ACCESS_KEY")
+aws_secret_key = os.getenv("AWS_SECRET_KEY")
+region = os.getenv("AWS_REGION")
+
+# Initialize the S3 client
+s3_client = S3Operations(
+    bucket_name=bucket_name,
+    aws_access_key=aws_access_key,
+    aws_secret_key=aws_secret_key,
+    region_name=region
+)
+
+# Fetch a file
+df = s3_client.fetch_file_from_s3("data.csv")
+print(df.head())
 
 
 
@@ -73,13 +96,14 @@ def save_data(train_data: pd.DataFrame, test_data: pd.DataFrame, data_path: str)
 
 def main():
     try:
-        # params = load_params(params_path='params.yaml')
-        # test_size = params['data_ingestion']['test_size']
-        test_size = 0.2
+        params = load_params(params_path='params.yaml')
+        test_size = params['data_ingestion']['test_size']
+        # test_size = 0.2
         
         #df = load_data(data_url='notebooks/data.csv')
-        s3 = s3_connection.s3_operations()
-        df = s3.fetch_file_from_s3("data.csv")
+        data_ingestion = s3_connection.S3operations("BUCKET_NAME", "AWS_ACCESS_KEY", "AWS_SECRET_KEY")
+        df = data_ingestion.fetch_file_from_s3("FILE_KEY")
+
 
         final_df = preprocess_data(df)
         train_data, test_data = train_test_split(final_df, test_size=test_size, random_state=42)
