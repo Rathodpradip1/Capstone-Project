@@ -46,6 +46,11 @@ jobs:
           CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
         run: python scripts/promote_model.py
 
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r flask_app/requirements.txt  
+
       - name: Run Flask app tests
         if: success()
         env:
